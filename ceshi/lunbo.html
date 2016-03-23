@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="format-detection" content="telephone=no" />
+    <title>移动端Zepto.js支持的图片轮播，支持手动左右滑动</title>
+    <link href="css/index.css" rel="stylesheet" />
+    <style type="text/css">
+        .imageRotation{
+            height:50px;
+            width:270px;
+            overflow:hidden;  /*--超出容器的所有元素都不可见--*/
+            position:relative;  /*--相对定位--*/
+        }
+        /*-------------图片容器---------------*/
+        .imageBox{
+            position:absolute;  /*--固定定位--*/
+            height:270px;
+            top:0px;
+            /*left:0px;*/
+            overflow:hidden;
+        }
+        .imageBox img {
+            display:block;
+            height:50px;
+            width:270px;
+            float:left;
+            border:none;
+        }
+        .icoBox{
+            position:absolute;  /*--固定定位--*/
+            bottom:14px;
+            right:15px;
+            width:76px;
+            height:12px;
+            text-align:center;
+            line-height:40px;
+            z-index:2;
+        }
+        .icoBox li{
+            display:block;
+            float:left;
+            height:12px;
+            width:12px;
+            margin-left:3px;
+            overflow:hidden;
+            background:url("img/1.png") 0px 0px no-repeat;
+            cursor:pointer;
+        }
+        .icoBox li.active {
+            background-position:0px -12px;
+            cursor:default;
+        }
+    </style>
+</head>
+<body>
+<div class="imageRotation">
+    <ul class="imageBox">
+        <li><img src="img/4.png" /></li>
+        <li><img src="img/5.png" /></li>
+        <li><img src="img/1.png" /></li>
+        <li><img src="img/2.png" /></li>
+        <li><img src="img/3.png" /></li>
+    </ul>
+    <ul class="icoBox">
+        <li class="active" rel="1">1</li>
+        <li rel="2">2</li>
+        <li rel="3">3</li>
+        <li rel="4">4</li>
+        <li rel="5">5</li>
+    </ul>
+</div>
+
+<script type="text/javascript" src="js/zepto.min.js"></script>
+<script type="text/javascript">
+
+        var pic = $(".imageRotation");
+        var oUl = pic.children(".imageBox");
+        var aImg = pic.find("img");
+        var imgWidth = parseFloat(pic.css("width")) || pic.prop("offsetWidth");
+        oUl.css("width", imgWidth * aImg.length + 'px');
+        oUl.css("left", "-" +(imgWidth * 2) + 'px');
+        var i = 1;
+        function settimer(){
+            if(i>4){
+                i=1;
+            }else{
+                i++;
+            }
+            oUl.animate({
+                "left": "-" + (imgWidth * 3) + 'px'
+            }, 500, function(){
+                oUl.children("li").first().insertAfter(oUl.children("li").last());
+                oUl.css("left", "-" +(imgWidth * 2) + 'px');
+            });
+            $(".icoBox").find("li").removeClass("active").eq(i-1).addClass("active");
+        }
+
+        var timer = setInterval(settimer, 3000);
+
+        oUl.swipeLeft(function(){
+            clearInterval(timer);
+            if(i>4){
+                i=1;
+            }else{
+                i++;
+            }
+            oUl.animate({
+                "left": "-" + (imgWidth * 3) + 'px'
+            }, 500, function(){
+                oUl.children("li").first().insertAfter(oUl.children("li").last());
+                oUl.css("left", "-" +(imgWidth * 2) + 'px');
+            });
+            $(".icoBox").find("li").removeClass("active").eq(i-1).addClass("active");
+            timer = setInterval(settimer, 3000);
+        })
+
+        oUl.swipeRight(function(){
+            clearInterval(timer);
+            if(i == 1){
+                i=5;
+            }else{
+                i--;
+            }
+            oUl.animate({
+                "left": "-" + imgWidth + 'px'
+            }, 500, function(){
+                oUl.children("li").last().insertBefore(oUl.children("li").first());
+                oUl.css("left","-" +(imgWidth * 2) + 'px');
+            });
+            $(".icoBox").find("li").removeClass("active").eq(i-1).addClass("active");
+            timer = setInterval(settimer, 3000);
+        })
+
+</script>
+
+</body>
+</html>
